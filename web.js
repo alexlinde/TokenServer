@@ -1,16 +1,22 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 app.use(express.logger());
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
+io.set('log level', 1);
 
 var port = process.env.PORT || 5000;
-app.listen(port, function() {
+server.listen(port, function() {
            console.log("Listening on " + port);
            });
 
 // serve the homepage for iphone management
 app.get('/', function (req, res) {
         res.sendfile(__dirname + '/index.html');
+        });
+
+app.get('/zepto.js', function (req, res) {
+        res.sendfile(__dirname + '/zepto.js');
         });
 
 // heroku does not support websockets so force polling
@@ -21,9 +27,16 @@ io.configure(function () {
 
 // handle the socket
 io.sockets.on('connection', function (socket) {
-              socket.emit('news', { hello: 'world' });
-              socket.on('my other event', function (data) {
-                        console.log(data);
-                        });
-              });
+    var timer = setInterval(function () {
+                    socket.volatile.emit('time', Date.now() / 1000);
+                    }, 1000);
+
+    socket.on('disconnect', function () {
+            clearInterval(timer);
+            });
+
+  socket.on('add', function (data) {
+            console.log(data);
+            });
+  });
 

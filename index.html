@@ -1,8 +1,49 @@
-<script src="/socket.io/socket.io.js"></script>
-<script>
-    var socket = io.connect('http://localhost');
-    socket.on('news', function (data) {
-              console.log(data);
-              socket.emit('my other event', { my: 'data' });
-              });
-</script>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tokenator</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.1/jquery.mobile-1.2.1.min.css" />
+            <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+            <script src="http://code.jquery.com/mobile/1.2.1/jquery.mobile-1.2.1.min.js"></script>
+            <script src="/socket.io/socket.io.js"></script>
+            <style type="text/css">
+                #time { font-size: 5em  }
+                </style>
+    </head>
+    <body>
+        <div data-role="page">
+            
+            <div data-role="header">
+                <h1>Tokenator</h1>
+            </div><!-- /header -->
+            
+            <div data-role="content">
+                <div id="time">--:--:--</div>
+                <div id="add">
+                    <button value="10">Add 10 minutes</button>
+                    <button value="60">Add 1 hour</button>
+                </div>
+            </div><!-- /content -->
+            <div data-role="footer">
+                <h4>&copy; somefamilies.com 2013</h4>
+            </div>
+            
+        </div><!-- /page -->
+        <script>
+            var socket = io.connect('/');
+            $(document).ready(function() {
+                socket.on('time', function (data) {
+                          h = parseInt( data / 3600 ) % 24;
+                          m = parseInt( data / 60 ) % 60;
+                          s = parseInt( data % 60 );
+                          result = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m) + ":" + (s  < 10 ? "0" + s : s);
+                          $("#time").text(result);
+                      });
+                              
+                $("#add button").click(function() { socket.emit('add', this.value); });
+                              
+            });
+        </script>
+    </body>
+</html>
