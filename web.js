@@ -5,6 +5,8 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 io.set('log level', 1);
 
+var time = 0;
+
 var port = process.env.PORT || 5000;
 server.listen(port, function() {
            console.log("Listening on " + port);
@@ -28,15 +30,17 @@ io.configure(function () {
 // handle the socket
 io.sockets.on('connection', function (socket) {
     var timer = setInterval(function () {
-                    socket.volatile.emit('time', Date.now() / 1000);
+                    socket.volatile.emit('time', time);
                     }, 1000);
 
     socket.on('disconnect', function () {
             clearInterval(timer);
             });
 
-  socket.on('add', function (data) {
-            console.log(data);
+    socket.on('add', function (data) {
+            var secs = parseInt(data) * 60;
+            time += secs;
+            console.log("added " + secs + " seconds");
             });
   });
 

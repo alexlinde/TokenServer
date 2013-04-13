@@ -8,7 +8,7 @@
             <script src="http://code.jquery.com/mobile/1.2.1/jquery.mobile-1.2.1.min.js"></script>
             <script src="/socket.io/socket.io.js"></script>
             <style type="text/css">
-                #time { font-size: 5em  }
+                #time { font-size: 4em  }
                 </style>
     </head>
     <body>
@@ -41,7 +41,7 @@
                           $("#time").text(result);
                       });
                               
-                $("#add button").click(function() { socket.emit('add', this.value); });
+                $("#add button").bind( "click", function(event, ui) { socket.emit('add', this.value); });
                               
             });
         </script>
