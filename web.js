@@ -17,6 +17,10 @@ app.get('/', function (req, res) {
         res.sendfile(__dirname + '/index.html');
         });
 
+app.get('/test', function (req, res) {
+        res.sendfile(__dirname + '/test.html');
+        });
+
 // heroku does not support websockets so force polling
 io.configure(function () {
              io.set("transports", ["xhr-polling"]);
@@ -24,9 +28,24 @@ io.configure(function () {
              });
 
 // handle the socket
+var connected = false;
+var arduino = io
+    .of('/arduino')
+    .on('connection', function (socket) {
+    socket.on('update', function (data) {
+           time = parseInt(data);
+           console.log("current arduino time " + time);
+           connected = true;
+           });
+    socket.on('disconnect', function () {
+           connected = false;
+              });
+    });
+
+
 io.of('/client').on('connection', function (socket) {
     var timer = setInterval(function () {
-                    socket.volatile.emit('time', time);
+        socket.volatile.emit('update', {time: time, connected: connected});
                     }, 1000);
 
     socket.on('disconnect', function () {
@@ -35,7 +54,7 @@ io.of('/client').on('connection', function (socket) {
 
     socket.on('add', function (data) {
             var secs = parseInt(data) * 60;
-            time += secs;
+            arduino.emit('add',secs);
             console.log("added " + secs + " seconds");
             });
   });

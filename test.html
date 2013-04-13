@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tokenator Tester</title>
+            <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+            <script src="/socket.io/socket.io.js"></script>
+    </head>
+    <body>
+        <div id="time">--:--:--</div>
+        <script>
+            var time = 60;
+            var socket = io.connect('/arduino');
+            $(document).ready(function() {
+                socket.on('add', function (data) {
+                          time += parseInt(data);
+                      });
+                });
+            setInterval(function (){
+                        h = parseInt( time / 3600 ) % 24;
+                        m = parseInt( time / 60 ) % 60;
+                        s = parseInt( time % 60 );
+                        result = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m) + ":" + (s  < 10 ? "0" + s : s);
+                        $("#time").text(result);
+                        socket.emit('update',time);
+                        if (time) {
+                            time--;
+                        }
+                    }, 1000);
+        </script>
+    </body>
+</html>

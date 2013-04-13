@@ -29,8 +29,8 @@
             <div data-role="content">
                 <div id="time">--:--:--</div>
                 <div id="add">
-                    <button value="10">Add 10 minutes</button>
-                    <button value="60">Add 1 hour</button>
+                    <button disabled value="10">Add 10 minutes</button>
+                    <button disabled value="60">Add 1 hour</button>
                 </div>
             </div><!-- /content -->
             <div data-role="footer">
@@ -41,12 +41,18 @@
         <script>
             var socket = io.connect('/client');
             $(document).ready(function() {
-                socket.on('time', function (data) {
-                          h = parseInt( data / 3600 ) % 24;
-                          m = parseInt( data / 60 ) % 60;
-                          s = parseInt( data % 60 );
-                          result = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m) + ":" + (s  < 10 ? "0" + s : s);
-                          $("#time").text(result);
+                socket.on('update', function (data) {
+                          if (data.connected) {
+                              $("#add button").button('enable');
+                              h = parseInt( data.time / 3600 ) % 24;
+                              m = parseInt( data.time / 60 ) % 60;
+                              s = parseInt( data.time % 60 );
+                              result = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m) + ":" + (s  < 10 ? "0" + s : s);
+                              $("#time").text(result);
+                          } else {
+                              $("#add button").button('disable');
+                              $("#time").text("not connected");
+                          }
                       });
                               
                 $("#add button").bind( "click", function(event, ui) { socket.emit('add', this.value); });
