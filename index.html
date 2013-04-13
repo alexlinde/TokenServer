@@ -39,7 +39,7 @@
             
         </div><!-- /page -->
         <script>
-            var socket = io.connect('/');
+            var socket = io.connect('/client');
             $(document).ready(function() {
                 socket.on('time', function (data) {
                           h = parseInt( data / 3600 ) % 24;

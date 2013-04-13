@@ -17,10 +17,6 @@ app.get('/', function (req, res) {
         res.sendfile(__dirname + '/index.html');
         });
 
-app.get('/zepto.js', function (req, res) {
-        res.sendfile(__dirname + '/zepto.js');
-        });
-
 // heroku does not support websockets so force polling
 io.configure(function () {
              io.set("transports", ["xhr-polling"]);
@@ -28,7 +24,7 @@ io.configure(function () {
              });
 
 // handle the socket
-io.sockets.on('connection', function (socket) {
+io.of('/client').on('connection', function (socket) {
     var timer = setInterval(function () {
                     socket.volatile.emit('time', time);
                     }, 1000);
