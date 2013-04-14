@@ -22,20 +22,43 @@ app.get('/test', function (req, res) {
         });
 
 // heroku does not support websockets so force polling
+// reduce polling duration to 2 seconds - this seems to be the amount of time it will delay
 io.configure(function () {
              io.set("transports", ["xhr-polling"]);
-             io.set("polling duration", 10);
+             io.set("polling duration", 2);
              });
 
-// handle the socket
+var arduino;
 var connected = false;
-var arduino = io
+var client = io
+        .of('/client')
+        .on('connection', function (socket) {
+            socket.volatile.emit('update', {time: time, connected: connected});
+//                    var timer = setInterval(function () {
+//                                            socket.volatile.emit('update', {time: time, connected: connected});
+//                                            }, 1000);
+            
+//                    socket.on('disconnect', function () {
+//                              clearInterval(timer);
+//                              });
+            
+                    socket.on('add', function (data) {
+                              var secs = parseInt(data) * 60;
+                              arduino.emit('add',secs);
+                              console.log("added " + secs + " seconds");
+                              });
+                    });
+
+
+// handle the socket
+arduino = io
     .of('/arduino')
     .on('connection', function (socket) {
         connected = true;
     socket.on('update', function (data) {
            connected = true;
            time = parseInt(data);
+           client.volatile.emit('update', {time: time, connected: connected});
            console.log("current arduino time " + time);
            });
     socket.on('disconnect', function () {
@@ -43,20 +66,4 @@ var arduino = io
               });
     });
 
-
-io.of('/client').on('connection', function (socket) {
-    var timer = setInterval(function () {
-        socket.volatile.emit('update', {time: time, connected: connected});
-                    }, 1000);
-
-    socket.on('disconnect', function () {
-            clearInterval(timer);
-            });
-
-    socket.on('add', function (data) {
-            var secs = parseInt(data) * 60;
-            arduino.emit('add',secs);
-            console.log("added " + secs + " seconds");
-            });
-  });
 
