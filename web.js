@@ -26,15 +26,15 @@ app.get('/test', function (req, res) {
 // likely the desktop uses two sockets which is really not an option for arduino, so let's err on
 // the side of polling and send updates less frequently
 io.configure(function () {
+//             io.set("transports", ["xhr-polling", "websocket"]);
              io.set("transports", ["xhr-polling"]);
              io.set("polling duration", 10);
              });
 
-var arduino;
+var arduino = io.of('/arduino');
+var client = io.of('/client');
 var connected = false;
-var client = io
-        .of('/client')
-        .on('connection', function (socket) {
+client.on('connection', function (socket) {
 //            socket.volatile.emit('update', {time: time, connected: connected});
 //                    var timer = setInterval(function () {
 //                                            socket.volatile.emit('update', {time: time, connected: connected});
@@ -53,9 +53,8 @@ var client = io
 
 
 // handle the socket
-arduino = io
-    .of('/arduino')
-    .on('connection', function (socket) {
+arduino.on('connection', function (socket) {
+           console.log("arduino connected");
         connected = true;
     socket.on('update', function (data) {
            connected = true;
@@ -64,7 +63,9 @@ arduino = io
            console.log("current arduino time " + time);
            });
     socket.on('disconnect', function () {
+              console.log("arduino disconnected");
            connected = false;
+              client.volatile.emit('update', {time: time, connected: connected});
               });
     });
 
