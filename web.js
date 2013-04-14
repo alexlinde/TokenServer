@@ -32,10 +32,11 @@ var connected = false;
 var arduino = io
     .of('/arduino')
     .on('connection', function (socket) {
+        connected = true;
     socket.on('update', function (data) {
+           connected = true;
            time = parseInt(data);
            console.log("current arduino time " + time);
-           connected = true;
            });
     socket.on('disconnect', function () {
            connected = false;
