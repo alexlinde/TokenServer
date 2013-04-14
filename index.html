@@ -39,23 +39,32 @@
             
         </div><!-- /page -->
         <script>
+            var secs = -1;
+            function showTime() {
+                var h = parseInt( secs / 3600 ) % 24;
+                var m = parseInt( secs / 60 ) % 60;
+                var s = parseInt( secs % 60 );
+                var result = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m) + ":" + (s  < 10 ? "0" + s : s);
+                $("#time").text(result);                
+            }
+            var timer = setInterval(function() { if (secs > 0) { secs--; showTime(); } }, 1000);
+
             var socket = io.connect('/client');
             $(document).ready(function() {
                 socket.on('update', function (data) {
                           if (data.connected) {
                               $("#add button").button('enable');
-                              h = parseInt( data.time / 3600 ) % 24;
-                              m = parseInt( data.time / 60 ) % 60;
-                              s = parseInt( data.time % 60 );
-                              result = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m) + ":" + (s  < 10 ? "0" + s : s);
-                              $("#time").text(result);
+                              secs = data.time;
+                              showTime();
                           } else {
                               $("#add button").button('disable');
-                              $("#time").text("not connected");
+                              $("#time").text("--:--:--");
+                          time = -1;
                           }
                       });
-                              
-                $("#add button").bind( "click", function(event, ui) { socket.emit('add', this.value); });
+                         
+                // also reflect time update locally for UI consistency. will be overriden by arduino at next update
+                $("#add button").bind( "click", function(event, ui) { socket.emit('add', this.value); secs += this.value * 60 });
                               
             });
         </script>

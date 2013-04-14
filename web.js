@@ -22,10 +22,12 @@ app.get('/test', function (req, res) {
         });
 
 // heroku does not support websockets so force polling
-// reduce polling duration to 2 seconds - this seems to be the amount of time it will delay
+// tried reducing to 2 secs to lower latency, but problem is that client has no time to respond
+// likely the desktop uses two sockets which is really not an option for arduino, so let's err on
+// the side of polling and send updates less frequently
 io.configure(function () {
              io.set("transports", ["xhr-polling"]);
-             io.set("polling duration", 2);
+             io.set("polling duration", 10);
              });
 
 var arduino;
@@ -33,7 +35,7 @@ var connected = false;
 var client = io
         .of('/client')
         .on('connection', function (socket) {
-            socket.volatile.emit('update', {time: time, connected: connected});
+//            socket.volatile.emit('update', {time: time, connected: connected});
 //                    var timer = setInterval(function () {
 //                                            socket.volatile.emit('update', {time: time, connected: connected});
 //                                            }, 1000);
