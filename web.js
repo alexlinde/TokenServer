@@ -12,6 +12,8 @@ server.listen(port, function() {
            console.log("Listening on " + port);
            });
 
+app.use(express.static('static'));
+
 // serve the homepage for iphone management
 app.get('/', function (req, res) {
         res.sendfile(__dirname + '/index.html');

@@ -2,22 +2,23 @@
 <html>
     <head>
         <title>Tokenator</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.1/jquery.mobile-1.2.1.min.css" />
-            <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
-            <script>
-                $(document).bind("mobileinit", function(){
-                                 $.mobile.buttonMarkup.hoverDelay = 100;
-                                 });
-                </script>
-            <script src="http://code.jquery.com/mobile/1.2.1/jquery.mobile-1.2.1.min.js"></script>
-            <script src="/socket.io/socket.io.js"></script>
-            <style type="text/css">
-                #time {
-                    font-size: 4em;
-                    text-align: center;
-                }
-                </style>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="apple-touch-icon" sizes="114x114" href="/static/apple-icon-114x114.png" />
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.1/jquery.mobile-1.2.1.min.css" />
+        <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+        <script>
+            $(document).bind("mobileinit", function(){
+                             $.mobile.buttonMarkup.hoverDelay = 100;
+                             });
+            </script>
+        <script src="http://code.jquery.com/mobile/1.2.1/jquery.mobile-1.2.1.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <style type="text/css">
+            #time {
+                font-size: 4em;
+                text-align: center;
+            }
+        </style>
     </head>
     <body>
         <div data-role="page">
