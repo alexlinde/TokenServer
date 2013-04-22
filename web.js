@@ -33,9 +33,9 @@ io.configure(function () {
 
 var arduino = io.of('/arduino');
 var client = io.of('/client');
-var connected = false;
+var connected = 0;
 client.on('connection', function (socket) {
-//            socket.volatile.emit('update', {time: time, connected: connected});
+            socket.emit('update', {time: time, connected: connected});
 //                    var timer = setInterval(function () {
 //                                            socket.volatile.emit('update', {time: time, connected: connected});
 //                                            }, 1000);
@@ -55,16 +55,16 @@ client.on('connection', function (socket) {
 // handle the socket
 arduino.on('connection', function (socket) {
            console.log("arduino connected");
-        connected = true;
+        connected++;
     socket.on('update', function (data) {
-           connected = true;
+//           connected = true;
            time = parseInt(data);
            client.volatile.emit('update', {time: time, connected: connected});
            console.log("current arduino time " + time);
            });
     socket.on('disconnect', function () {
               console.log("arduino disconnected");
-           connected = false;
+           connected--;
               client.volatile.emit('update', {time: time, connected: connected});
               });
     });
